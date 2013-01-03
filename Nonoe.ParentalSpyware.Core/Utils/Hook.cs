@@ -532,7 +532,6 @@ namespace Nonoe.ParentalSpyware.Core.Utils
         /// </summary>
         private static HookProc KeyboardHookProcedure;
 
-
         /// <summary>
         /// Installs both mouse and keyboard hooks and starts rasing events
         /// </summary>
@@ -542,7 +541,11 @@ namespace Nonoe.ParentalSpyware.Core.Utils
            Start(true, true);
         }
 
+        /// <summary>
+        /// The is active property
+        /// </summary>
         public bool IsActive = false;
+
         /// <summary>
         /// Installs both or one of mouse and/or keyboard hooks and starts rasing events
         /// </summary>
