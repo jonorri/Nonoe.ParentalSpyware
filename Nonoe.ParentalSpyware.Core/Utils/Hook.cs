@@ -33,6 +33,15 @@ namespace Nonoe.ParentalSpyware.Core.Utils
             /// Specifies the y-coordinate of the point. 
             /// </summary>
             public int y;
+
+            /// <summary>
+            /// Prevents a default instance of the <see cref="POINT"/> class from being created. 
+            /// </summary>
+            private POINT()
+            {
+                this.x = 0;
+                this.y = 0;
+            }
         }
 
         /// <summary>
