@@ -78,7 +78,7 @@ namespace Nonoe.ParentalSpyware.Core.Utils
         /// The MSLLHOOKSTRUCT structure contains information about a low-level keyboard input event. 
         /// </summary>
         [StructLayout(LayoutKind.Sequential)]
-        private class MouseLLHookStruct
+        private struct MouseLLHookStruct
         {
             /// <summary>
             /// Specifies a POINT structure that contains the x- and y-coordinates of the cursor, in screen coordinates. 

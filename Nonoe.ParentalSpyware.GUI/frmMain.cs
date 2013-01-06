@@ -709,22 +709,22 @@ namespace KeyLogger
             public bool EnableSsl;
 
             /// <summary>
-            /// The logstr.
+            /// The log string.
             /// </summary>
             public string Logstr;
 
             /// <summary>
-            /// The mailaddress.
+            /// The mail address.
             /// </summary>
             public string Mailaddress;
 
             /// <summary>
-            /// The mailpassword.
+            /// The mail password.
             /// </summary>
             public string Mailpassword;
 
             /// <summary>
-            /// The smtp host.
+            /// The SMTP host.
             /// </summary>
             public string SmtpHost;
 
